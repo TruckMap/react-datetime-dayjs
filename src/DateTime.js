@@ -505,8 +505,6 @@ export default class Datetime extends React.Component {
 		if ( selectedDate && selectedDate.isValid() ) {
 			update.inputValue = selectedDate.format( this.getFormat('datetime') );
 		}
-
-		console.log('update', update);
 		
 		this.setState( update );
 	}
