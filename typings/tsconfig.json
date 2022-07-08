@@ -8,11 +8,11 @@
         "baseUrl": "../",
         "lib": ["es6"],
         "paths": {
-            "react-datetime": ["./"]
+            "react-datetime-dayjs": ["./"]
         }
     },
     "files": [
         "./DateTime.d.ts",
-        "react-datetime-tests.tsx"
+        "react-datetime-dayjs-tests.tsx"
     ]
 }

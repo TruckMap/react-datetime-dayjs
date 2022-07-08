@@ -1,7 +1,5 @@
-# react-datetime
-
-[![Build Status](https://secure.travis-ci.org/arqex/react-datetime.svg)](https://travis-ci.org/arqex/react-datetime)
-[![npm version](https://badge.fury.io/js/react-datetime.svg)](http://badge.fury.io/js/react-datetime)
+# react-datetime-dayjs
+> a fork of [react-datetime](https://github.com/arqex/react-datetime) to support [DayJS](https://day.js.org/).
 
 A date and time picker in the same React.js component. It can be used as a datepicker, timepicker or both at the same time. It is **highly customizable** and it even allows to edit date's milliseconds.
 
@@ -13,21 +11,21 @@ A date and time picker in the same React.js component. It can be used as a datep
 
 Install using npm:
 ```sh
-npm install --save react-datetime
+npm install --save @truckmap/react-datetime-dayjs
 ```
 
 Install using yarn:
 ```sh
-yarn add react-datetime
+yarn add @truckmap/react-datetime-dayjs
 ```
 
 ## Usage
 
-[React.js](http://facebook.github.io/react/) and [Moment.js](http://momentjs.com/) are peer dependencies for react-datetime (as well as [Moment.js timezones](https://momentjs.com/timezone/) if you want to use the `displayTimeZone` prop). These dependencies are not installed along with react-datetime automatically, but your project needs to have them installed in order to make the datepicker work. You can then use the datepicker like in the example below.
+[React.js](http://facebook.github.io/react/) and [Day.js](https://day.js.org/) are peer dependencies for react-datetime-dayjs. These dependencies are not installed along with react-datetime-dayjs automatically, but your project needs to have them installed in order to make the datepicker work. You can then use the datepicker like in the example below.
 
 ```js
 // Import the library
-import Datetime from 'react-datetime';
+import Datetime from 'react-datetime-dayjs';
 
 // return it from your components
 return <Datetime />;
@@ -39,7 +37,7 @@ Do you want more examples? [Have a look at our resources gallery](resources.md).
 **Don't forget to add the [CSS stylesheet](https://github.com/arqex/react-datetime/blob/master/css/react-datetime.css) to make it work out of the box.**. You only need to do this once in your app:
 
 ```js
-import "react-datetime/css/react-datetime.css";
+import "react-datetime-dayjs/css/react-datetime.css";
 ```
 
 ## API
@@ -99,14 +97,14 @@ Available methods are:
 * **setViewDate( date )**: Set the date that is currently shown in the calendar. This is independent from the selected date and it's the one used to navigate through months or days in the calendar. It accepts a string in the format of the current locale, a `Date` or a `Moment` object as parameter.
 
 ## i18n
-Different language and date formats are supported by react-datetime. React uses [Moment.js](http://momentjs.com/) to format the dates, and the easiest way of changing the language of the calendar is [changing the Moment.js locale](http://momentjs.com/docs/#/i18n/changing-locale/).
+Different language and date formats are supported by react-datetime-dayjs. React uses [Day.js](https://day.js.org/) to format the dates, and the easiest way of changing the language of the calendar is [changing the Day.js locale](https://day.js.org/docs/en/i18n/loading-into-nodejs#docsNav).
 
 Don't forget to import your locale file from the moment's `moment/locale` folder.
 
 ```js
-import moment from 'moment';
-import 'moment/locale/fr';
-// Now react-datetime will be in french
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
+// Now react-datetime-dayjs will be in french
 ```
 
 If there are multiple locales loaded, you can use the prop `locale` to define what language shall be used by the instance.
@@ -280,7 +278,7 @@ var valid = function( current ){
 This project includes typings for TypeScript versions 1.8 and 2.0. Additional typings are not
 required.
 
-Typings for 1.8 are found in `react-datetime.d.ts` and typings for 2.0 are found in `typings/index.d.ts`.
+Typings for 1.8 are found in `react-datetime-day.d.ts` and typings for 2.0 are found in `typings/index.d.ts`.
 
 ```js
 import * as Datetime from 'react-datetime';

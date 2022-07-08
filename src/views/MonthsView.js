@@ -91,11 +91,11 @@ export default class MonthsView extends React.Component {
 		}
 
 		// If one day in the month is valid, the year should be clickable
-		let date = this.props.viewDate.clone().set({month});
+		let date = this.props.viewDate.clone().month(month);
 		let day = date.endOf( 'month' ).date() + 1;
 
 		while ( day-- > 1 ) {
-			if ( isValidDate( date.date(day) ) ) {
+			if ( isValidDate( date.day(day) ) ) {
 				return false;
 			}
 		}
@@ -103,8 +103,8 @@ export default class MonthsView extends React.Component {
 	}
 
 	getMonthText( month ) {
-		const localMoment = this.props.viewDate;
-		const monthStr = localMoment.localeData().monthsShort( localMoment.month( month ) );
+		const localDayJS = this.props.viewDate;
+		const monthStr = localDayJS.localeData().monthsShort( localDayJS.month( month ) );
 
 		// Because some months are up to 5 characters long, we want to
 		// use a fixed string length for consistency

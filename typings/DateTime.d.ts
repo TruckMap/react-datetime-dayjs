@@ -5,8 +5,8 @@
 //                 Karol Janyst <http://github.com/LKay>,
 //                 Javier Marquez <javi@arqex.com>
 
-import { Component, ChangeEvent, FocusEvent, FocusEventHandler } from 'react';
-import { Moment } from 'moment';
+import { Component, FocusEvent, FocusEventHandler } from 'react';
+import { Dayjs } from 'dayjs';
 
 export = ReactDatetimeClass;
 
@@ -29,24 +29,24 @@ declare namespace ReactDatetimeClass {
         milliseconds?: TimeConstraint;
     }
 
-    type EventOrValueHandler<Event> = (event: Event | Moment | string) => void;
+    type EventOrValueHandler<Event> = (event: Event | Dayjs | string) => void;
 
     export interface DatetimepickerProps {
         /*
          Represents the selected date by the component, in order to use it as a controlled component.
-         This prop is parsed by moment.js, so it is possible to use a date string or a moment.js date.
+         This prop is parsed by dayjs.js, so it is possible to use a date string or a dayjs.js date.
          */
-        value?: Date | string | Moment;
+        value?: Date | string | Dayjs;
         /*
          Represents the selected date for the component to use it as a uncontrolled component.
          This prop is parsed by moment.js, so it is possible to use a date string or a moment.js date.
          */
-        initialValue?: Date | string | Moment;
+        initialValue?: Date | string | Dayjs;
         /*
          Define the month/year/decade/time which is viewed on opening the calendar.
          This prop is parsed by Moment.js, so it is possible to use a date `string` or a `moment` object.
          */
-        initialViewDate?: Date | string | Moment;
+        initialViewDate?: Date | string | Dayjs;
         /*
          The default view to display when the picker is shown for the first time. ('years', 'months', 'days', 'time')
          */
@@ -101,7 +101,7 @@ declare namespace ReactDatetimeClass {
          only parameter, if the date in the input is valid. If the date in the input is not valid, the
          callback receives the value of the input (a string).
          */
-        onChange?: (value: Moment | string) => void;
+        onChange?: (value: Dayjs | string) => void;
         /*
          Callback trigger for when the user opens the datepicker.
          */
@@ -125,7 +125,7 @@ declare namespace ReactDatetimeClass {
          navigate to it. If the function returns a "falsy" value, the navigation is stopped and we will 
          remain in the current view.
          */
-        onBeforeNavigate?: (nextView: string, currentView: string, viewDate: Moment) => string;
+        onBeforeNavigate?: (nextView: string, currentView: string, viewDate: Dayjs) => string;
         /*
          Callback trigger when the user navigates to the previous month, year or decade.
          The callback receives the amount and type ('month', 'year') as parameters.
@@ -206,8 +206,8 @@ declare namespace ReactDatetimeClass {
     export interface DatetimepickerState {
         updateOn: string;
         inputFormat: string;
-        viewDate: Moment;
-        selectedDate: Moment;
+        viewDate: Dayjs;
+        selectedDate: Dayjs;
         inputValue: string;
         open: boolean;
     }

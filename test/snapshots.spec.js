@@ -13,8 +13,12 @@ jest.mock('react-dom', () => ({
 	findDOMNode: () => {},
 }));
 
-// Mock date to get rid of time as a factor to make tests deterministic
-// 2016-12-21T23:36:07.071Z
+jest.useFakeTimers();
+
+jest.setSystemTime(new Date(1482363367071).getTime());
+
+// // Mock date to get rid of time as a factor to make tests deterministic
+// // 2016-12-21T23:36:07.071Z
 Date.now = jest.fn(() => 1482363367071);
 
 it('everything default: renders correctly', () => {
@@ -177,7 +181,7 @@ describe('inputProps', () => {
 });
 
 it('isValidDate: only valid if after yesterday', () => {
-	const yesterday = Datetime.moment().subtract(1, 'day');
+	const yesterday = Datetime.dayjs().subtract(1, 'day');
 	const valid = (current) => current.isAfter(yesterday);
 	const tree = renderer.create(
 		<Datetime isValidDate={ valid } />

@@ -100,7 +100,7 @@ export default class YearsView extends React.Component {
 		}
 
 		// If one day in the year is valid, the year should be clickable
-		let date = this.props.viewDate.clone().set({year});
+		let date = this.props.viewDate.clone().year(year);
 		let day = date.endOf( 'year' ).dayOfYear() + 1;
 
 		while ( day-- > 1 ) {

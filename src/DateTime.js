@@ -1,11 +1,26 @@
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import localeData from 'dayjs/plugin/localeData';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import dayOfYear from 'dayjs/plugin/dayOfYear';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React from 'react';
 import DaysView from './views/DaysView';
 import MonthsView from './views/MonthsView';
 import YearsView from './views/YearsView';
 import TimeView from './views/TimeView';
 import onClickOutside from 'react-onclickoutside';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(localeData);
+dayjs.extend(localizedFormat);
+dayjs.extend(updateLocale);
+dayjs.extend(dayOfYear);
+dayjs.extend(customParseFormat);
 
 const viewModes = {
 	YEARS: 'years',
@@ -16,7 +31,7 @@ const viewModes = {
 
 const TYPES = PropTypes;
 const nofn = function () {};
-const datetype = TYPES.oneOfType([ TYPES.instanceOf(moment), TYPES.instanceOf(Date), TYPES.string ]);
+const datetype = TYPES.oneOfType([ TYPES.instanceOf(dayjs), TYPES.instanceOf(Date), TYPES.string ]);
 
 export default class Datetime extends React.Component {
 	static propTypes = {
@@ -77,8 +92,8 @@ export default class Datetime extends React.Component {
 		renderView: ( _, renderFunc ) => renderFunc(),
 	}
 
-	// Make moment accessible through the Datetime class
-	static moment = moment;
+	// Make dayjs accessible through the Datetime class
+	static dayjs = dayjs;
 
 	constructor( props ) {
 		super( props );
@@ -132,12 +147,12 @@ export default class Datetime extends React.Component {
 		const state = this.state;
 
 		let viewProps = {
-			viewDate: state.viewDate.clone(),
+			viewDate: state.viewDate,
 			selectedDate: this.getSelectedDate(),
 			isValidDate: props.isValidDate,
 			updateDate: this._updateDate,
 			navigate: this._viewNavigate,
-			moment: moment,
+			dayjs,
 			showView: this._showView
 		};
 
@@ -206,7 +221,7 @@ export default class Datetime extends React.Component {
 	}
 
 	getInitialDate() {
-		let m = this.localMoment();
+		let m = this.localDayJS();
 		m.hour(0).minute(0).second(0).millisecond(0);
 		return m;
 	}
@@ -220,9 +235,9 @@ export default class Datetime extends React.Component {
 		let parsedDate;
 
 		if (date && typeof date === 'string')
-			parsedDate = this.localMoment(date, dateFormat);
+			parsedDate = this.localDayJS(date, dateFormat);
 		else if (date)
-			parsedDate = this.localMoment(date);
+			parsedDate = this.localDayJS(date);
 
 		if (parsedDate && !parsedDate.isValid())
 			parsedDate = null;
@@ -278,12 +293,13 @@ export default class Datetime extends React.Component {
 
 	getLocaleData() {
 		let p = this.props;
-		return this.localMoment( p.value || p.defaultValue || new Date() ).localeData();
+		return this.localDayJS( p.value || p.defaultValue || new Date() ).localeData();
 	}
 
 	getDateFormat() {
 		const locale = this.getLocaleData();
 		let format = this.props.dateFormat;
+
 		if ( format === true ) return locale.longDateFormat('L');
 		if ( format ) return format;
 		return '';
@@ -339,14 +355,14 @@ export default class Datetime extends React.Component {
 		let viewDate = this.state.viewDate.clone();
 
 		// Set the value into day/month/year
-		viewDate[ this.viewToMethod[currentView] ](
+		viewDate = viewDate[ this.viewToMethod[currentView] ](
 			parseInt( e.target.getAttribute('data-value'), 10 )
 		);
 
 		// Need to set month and year will for days view (prev/next month)
 		if ( currentView === 'days' ) {
-			viewDate.month( parseInt( e.target.getAttribute('data-month'), 10 ) );
-			viewDate.year( parseInt( e.target.getAttribute('data-year'), 10 ) );
+			viewDate = viewDate.month( parseInt( e.target.getAttribute('data-month'), 10 ) );
+			viewDate = viewDate.year( parseInt( e.target.getAttribute('data-year'), 10 ) );
 		}
 
 		let update = {viewDate: viewDate};
@@ -358,7 +374,7 @@ export default class Datetime extends React.Component {
 				this._closeCalendar();
 			}
 
-			this.props.onChange( viewDate.clone() );
+			this.props.onChange( viewDate );
 		}
 		else {
 			this._showView( this.nextView[ currentView ], viewDate );
@@ -368,15 +384,14 @@ export default class Datetime extends React.Component {
 	}
 
 	_viewNavigate = ( modifier, unit ) => {
-		let viewDate = this.state.viewDate.clone();
-		
-		// Subtracting is just adding negative time
-		viewDate.add( modifier, unit );
+		let viewDate;
 
 		if ( modifier > 0 ) {
+			viewDate = this.state.viewDate.add( modifier, unit );
 			this.props.onNavigateForward( modifier, unit );
 		}
 		else {
+			viewDate = this.state.viewDate.subtract( Math.abs(modifier), unit );
 			this.props.onNavigateBack( -(modifier), unit );
 		}
 
@@ -386,17 +401,17 @@ export default class Datetime extends React.Component {
 	_setTime = ( type, value ) => {
 		let date = (this.getSelectedDate() || this.state.viewDate).clone();
 		
-		date[ type ]( value );
+		const newD = date[ type ]( value );
 
 		if ( !this.props.value ) {
 			this.setState({
-				selectedDate: date,
-				viewDate: date.clone(),
-				inputValue: date.format( this.getFormat('datetime') )
+				selectedDate: newD,
+				viewDate: newD,
+				inputValue: newD.format( this.getFormat('datetime') )
 			});
 		}
 
-		this.props.onChange( date );
+		this.props.onChange( newD );
 	}
 
 	_openCalendar = () => {
@@ -420,28 +435,29 @@ export default class Datetime extends React.Component {
 		}
 	}
 
-	localMoment( date, format, props ) {
+	localDayJS( date, format, props ) {
 		props = props || this.props;
 		let m = null;
 
 		if (props.utc) {
-			m = moment.utc(date, format, props.strictParsing);
+			m = dayjs.utc(date, format, props.strictParsing);
 		} else if (props.displayTimeZone) {
-			m = moment.tz(date, format, props.displayTimeZone);
+			m = dayjs.tz(date, format, props.displayTimeZone);
 		} else {
-			m = moment(date, format, props.strictParsing);
+			m = dayjs(date, format, props.strictParsing);
 		}
 
-		if ( props.locale )
-			m.locale( props.locale );
+		if ( props.locale ) {
+			return m.locale( props.locale );
+		}
 		return m;
 	}
 
 	checkTZ() {
 		const { displayTimeZone } = this.props;
-		if ( displayTimeZone && !this.tzWarning && !moment.tz ) {
+		if ( displayTimeZone && !this.tzWarning && !dayjs.tz ) {
 			this.tzWarning = true;
-			log('displayTimeZone prop with value "' + displayTimeZone +  '" is used but moment.js timezone is not loaded.', 'error');
+			log('displayTimeZone prop with value "' + displayTimeZone +  '" is used but day.js timezone is not loaded.', 'error');
 		}
 	}
 
@@ -472,26 +488,25 @@ export default class Datetime extends React.Component {
 		let selectedDate = this.state.selectedDate && this.state.selectedDate.clone();
 
 		if ( props.locale ) {
-			viewDate.locale( props.locale );
-			selectedDate &&	selectedDate.locale( props.locale );
+			viewDate = viewDate.locale( props.locale );
+			selectedDate = selectedDate && selectedDate.locale( props.locale );
 		}
 		if ( props.utc ) {
-			viewDate.utc();
-			selectedDate &&	selectedDate.utc();
+			viewDate = viewDate.utc();
+			selectedDate = selectedDate && selectedDate.utc();
 		}
 		else if ( props.displayTimeZone ) {
-			viewDate.tz( props.displayTimeZone );
-			selectedDate &&	selectedDate.tz( props.displayTimeZone );
-		}
-		else {
-			viewDate.locale();
-			selectedDate &&	selectedDate.locale();
+			viewDate = viewDate.tz( props.displayTimeZone );
+			selectedDate = selectedDate &&	selectedDate.tz( props.displayTimeZone );
 		}
 
 		let update = { viewDate: viewDate, selectedDate: selectedDate};
+
 		if ( selectedDate && selectedDate.isValid() ) {
 			update.inputValue = selectedDate.format( this.getFormat('datetime') );
 		}
+
+		console.log('update', update);
 		
 		this.setState( update );
 	}
@@ -539,10 +554,10 @@ export default class Datetime extends React.Component {
 		
 		let viewDate;
 		if ( typeof date === 'string' ) {
-			viewDate = this.localMoment(date, this.getFormat('datetime') );
+			viewDate = this.localDayJS(date, this.getFormat('datetime') );
 		}
 		else {
-			viewDate = this.localMoment( date );
+			viewDate = this.localDayJS( date );
 		}
 
 		if ( !viewDate || !viewDate.isValid() ) return logError();
@@ -566,19 +581,19 @@ export default class Datetime extends React.Component {
 		if ( !this.callHandler( this.props.inputProps.onChange, e ) ) return;
 
 		const value = e.target ? e.target.value : e;
-		const localMoment = this.localMoment( value, this.getFormat('datetime') );
+		const localDayJS = this.localDayJS( value, this.getFormat('datetime') );
 		let update = { inputValue: value };
 
-		if ( localMoment.isValid() ) {
-			update.selectedDate = localMoment;
-			update.viewDate = localMoment.clone().startOf('month');
+		if ( localDayJS.isValid() ) {
+			update.selectedDate = localDayJS;
+			update.viewDate = localDayJS.startOf('month');
 		}
 		else {
 			update.selectedDate = null;
 		}
 
 		this.setState( update, () => {
-			this.props.onChange( localMoment.isValid() ? localMoment : this.state.inputValue );
+			this.props.onChange( localDayJS.isValid() ? localDayJS : this.state.inputValue );
 		});
 	}
 

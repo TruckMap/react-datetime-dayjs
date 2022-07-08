@@ -54,15 +54,15 @@ export default class DaysView extends React.Component {
 
 	renderDays() {
 		const date = this.props.viewDate;
-		const startOfMonth = date.clone().startOf('month');
-		const endOfMonth = date.clone().endOf('month');
+		const startOfMonth = date.startOf('month');
+		const endOfMonth = date.endOf('month');
 
 		// We need 42 days in 6 rows
 		// starting in the last week of the previous month
 		let rows = [[], [], [], [], [], []];
 
-		let startDate = date.clone().subtract( 1, 'months');
-		startDate.date( startDate.daysInMonth() ).startOf('week');
+		let startDate = date.subtract( 1, 'months');
+		startDate = startDate.date( startDate.daysInMonth() ).startOf('week');
 
 		let endDate = startDate.clone().add( 42, 'd' );
 		let i = 0;
@@ -70,7 +70,7 @@ export default class DaysView extends React.Component {
 		while ( startDate.isBefore( endDate ) ) {
 			let row = getRow( rows, i++ );
 			row.push( this.renderDay( startDate, startOfMonth, endOfMonth ) );
-			startDate.add( 1, 'd' );
+			startDate = startDate.add( 1, 'd' );
 		}
 
 		return rows.map( (r, i) => (
@@ -98,7 +98,7 @@ export default class DaysView extends React.Component {
 		if ( selectedDate && date.isSame( selectedDate, 'day' ) ) {
 			className += ' rdtActive';
 		}
-		if ( date.isSame( this.props.moment(), 'day' ) ) {
+		if ( date.isSame( this.props.dayjs(), 'day' ) ) {
 			className += ' rdtToday';
 		}
 
@@ -112,7 +112,7 @@ export default class DaysView extends React.Component {
 		dayProps.className = className;
 
 		return this.props.renderDay(
-			dayProps, date.clone(), selectedDate && selectedDate.clone()
+			dayProps, date, selectedDate
 		);
 	}
 
@@ -152,7 +152,7 @@ function getDaysOfWeek( locale ) {
 	let dow = [];
 	let i = 0;
 
-	locale._weekdaysMin.forEach(function (day) {
+	locale.weekdaysMin().forEach(function (day) {
 		dow[(7 + (i++) - first) % 7] = day;
 	});
 
