@@ -38,11 +38,9 @@ jobs:
       - name: Publish module
         if: ${{ github.event_name == 'push' && github.repository == 'TruckMap/react-datetime-dayjs' }}
         run: |
-          git config --local user.email "accounts@truckmap.com"
-          git config --local user.name "Truckmap[bot]"
           npm version major
           git add .
-          git commit --amend -m 'publish module [skip ci]'
+          git commit --amend -m 'publish module [skip ci]' --author="Truckmap[bot] <accounts@truckmap.com>"
           npm publish
           git push --force origin main
           git push --tags
