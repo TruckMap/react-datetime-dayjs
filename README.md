@@ -1,5 +1,5 @@
 # react-datetime-dayjs
-> a fork of [react-datetime](https://github.com/arqex/react-datetime) to support [DayJS](https://day.js.org/).
+> a fork of [react-datetime](https://github.com/arqex/react-datetime) to support [DayJS](https://day.js.org/). Doesn't support props.locale yet.
 
 A date and time picker in the same React.js component. It can be used as a datepicker, timepicker or both at the same time. It is **highly customizable** and it even allows to edit date's milliseconds.
 
