@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}-node-
       - name: Build and test
         run: |
-          npm ci --prefer-offline --no-audit
+          npm i --prefer-offline --no-audit
           npm test
           npm run tsc
       - name: Publish module
