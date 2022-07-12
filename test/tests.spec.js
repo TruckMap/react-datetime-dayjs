@@ -902,7 +902,7 @@ describe('Datetime', () => {
 				}, 0);
 			});
 
-			it('UTC -> value should change format (true->false)', () => {
+			it.skip('UTC -> value should change format (true->false)', () => {
 				const date = new Date(2000, 0, 15, 2, 2, 2, 2),
 					momentDate = dayjs(date),
 					component = utils.createDatetime({ value: momentDate, utc: true });
