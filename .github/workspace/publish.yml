@@ -1,0 +1,50 @@
+name: react-datetime-dayjs scripts
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types: [assigned, opened, synchronize, reopened]
+
+jobs:
+  publish-module:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_BOT_TOKEN }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+        if: ${{ github.event_name == 'pull_request_target' }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          registry-url: 'https://npm.pkg.github.com'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Build and test
+        run: |
+          npm ci --prefer-offline --no-audit
+          npm test
+          npm run tsc
+      - name: Publish module
+        if: ${{ github.event_name == 'push' && github.repository == 'TruckMap/react-datetime-dayjs' }}
+        run: |
+          git config --local user.email "accounts@truckmap.com"
+          git config --local user.name "Truckmap[bot]"
+          npm version major
+          git commit --amend -m 'publish module [skip ci]'
+          npm publish
+          git push --force origin main
+          git push --tags
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NODE_AUTH_TOKEN: ${{ github.token }}
+          NPM_AUTH_TOKEN: ${{ github.token }}
