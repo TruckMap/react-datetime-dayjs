@@ -16,10 +16,10 @@ jobs:
         with:
           ssh-strict: false
       - uses: actions/checkout@v2
+        if: ${{ github.event_name == 'pull_request_target' }}
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           ssh-strict: false
-        if: ${{ github.event_name == 'pull_request_target' }}
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
