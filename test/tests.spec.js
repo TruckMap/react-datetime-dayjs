@@ -1368,7 +1368,6 @@ describe('Datetime', () => {
 				strDateTZ = momentDateTZ.format('L') + ' ' + momentDateTZ.format('LT'),
 				component = utils.createDatetime({ value: momentDateUTC, displayTimeZone: displayTimeZone });
 
-			console.log('momentDateUTC', momentDateUTC);
 			expect(utils.getInputValue(component)).toEqual(strDateTZ);
 		});
 

@@ -34,13 +34,14 @@ jobs:
         run: |
           npm i --prefer-offline --no-audit
           npm test
-          npm run tsc
+          npm run build
       - name: Publish module
         if: ${{ github.event_name == 'push' && github.repository == 'TruckMap/react-datetime-dayjs' }}
         run: |
           git config --local user.email "accounts@truckmap.com"
           git config --local user.name "Truckmap[bot]"
           npm version major
+          git add .
           git commit --amend -m 'publish module [skip ci]'
           npm publish
           git push --force origin main
